@@ -1,15 +1,31 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+enum PaymentType {
+  PIX
+  CREDIT_CARD
+}
+
+enum StatusType {
+  FAIL
+  PAID
+  PENDING
+}
+
+model Payment {
+  id            String      @db.VarChar(100) @id(map: "pk_payment") @default(uuid())
+  cpf           String      @db.VarChar(11)
+  description   String      @db.VarChar(30)
+  amount        Decimal     @db.Decimal(10, 2) @default(0.00)
+  paymentMethod PaymentType @default(PIX)
+  status        StatusType  @default(PENDING)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  @@map("accounts")
 }

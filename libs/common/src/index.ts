@@ -1,4 +1,6 @@
 export * from './constants/constant';
+export * from './databases/prisma.module';
+export * from './databases/prisma.service';
 export * from './enums/enum';
 export * from './exceptions/http-exception.filter';
 export * from './interfaces/response';
