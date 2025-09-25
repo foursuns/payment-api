@@ -1,7 +1,6 @@
-import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { LoggerMiddleware, PrismaModule } from '@app/common';
-import helmet from 'helmet';
+import { PrismaModule } from '@app/common';
 import * as Joi from 'joi';
 import { PaymentController } from './payment.controller';
 import { PaymentService } from './payment.service';
@@ -38,11 +37,4 @@ import { PaymentService } from './payment.service';
   controllers: [PaymentController],
   providers: [PaymentService],
 })
-export class PaymentModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(LoggerMiddleware, helmet())
-      .exclude({ path: 'health', method: RequestMethod.ALL })
-      .forRoutes('*');
-  }
-}
+export class PaymentModule {}
