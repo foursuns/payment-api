@@ -98,9 +98,7 @@ export function prismaCompanyFactory(prisma: PrismaService): PrismaService {
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit {
   constructor() {
-    super({
-      log: ['query', 'info', 'warn', 'error'],
-    });
+    super();
   }
 
   async onModuleInit(): Promise<void> {
