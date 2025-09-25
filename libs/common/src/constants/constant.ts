@@ -12,6 +12,12 @@ export enum MESSAGE {
   PAYMENT_NOT_FOUND = 'Pagamento não encontrado',
   PAYMENT_LIST_EMPTY = 'Nenhum pagamento cadastrado',
 
+  MERCADOPAGO_AUTH_SUCCESS = 'Autenticação com a API do Mercado Pago realizada com sucesso',
+  MERCADOPAGO_AUTH_FAILED = 'Falha na autenticação com a API do Mercado Pago',
+  MERCADOPAGO_CONFIG_FAILED = 'Configuração do Mercado Pago está incorreta',
+  MERCADOPAGO_CREATE_FAILED = 'Falha ao tentar criar pagamento no Mercado Pago',
+  MERCADOPAGO_CREATE_SUCCESS = 'Pagamento criado com sucesso no Mercado Pago',
+
   INTERNAL_SERVER_ERROR = 'MicroService Security Error',
   BAD_REQUEST = 'Exceção de solicitação incorreta',
   BAD_GATEWAY_REQUEST = 'Exceção de solicitação gateway',

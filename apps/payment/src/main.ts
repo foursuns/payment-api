@@ -1,8 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import { Logger, NestApplicationOptions, ValidationPipe, VersioningType } from '@nestjs/common';
-import { HttpExceptionFilter, SwaggerDocumentBuilder } from '@app/common';
-import { PaymentModule } from './payment.module';
+import { HttpExceptionFilter, LoggingInterceptor, SwaggerDocumentBuilder } from '@app/common';
+import { PaymentModule } from './payments/payment.module';
 import helmet from 'helmet';
 
 declare const module: any;
@@ -12,7 +12,9 @@ async function bootstrap() {
     logger: new Logger(process.env.APP_PAYMENT),
   });
 
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
+  app.useGlobalPipes(
+    new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }),
+  );
   app.useGlobalFilters(new HttpExceptionFilter());
 
   app.enableVersioning({
@@ -21,6 +23,7 @@ async function bootstrap() {
 
   app.use(helmet());
   app.enableShutdownHooks();
+  app.useGlobalInterceptors(new LoggingInterceptor());
 
   const configService = app.get(ConfigService);
 
@@ -54,7 +57,9 @@ async function bootstrap() {
   if (configService.get('SWAGGER_ENABLED')) {
     const swaggerBuild = new SwaggerDocumentBuilder(app);
     swaggerBuild.setupSwagger();
-    Logger.log(`📗 Swagger is running`);
+    Logger.log(
+      `📗 Swagger is running: ${configService.get('HOST')}:${configService.get('PORT')}/${configService.get('SWAGGER_ENDPOINT')}`,
+    );
   } else {
     Logger.log(`❌ Swagger is disabled`);
   }
