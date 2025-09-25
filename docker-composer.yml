@@ -1,0 +1,32 @@
+name: 'payment'
+
+services:
+  postgres:
+    container_name: payment-postgres
+    image: postgres:16-alpine
+    env_file: .env
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_TIMEZONE='America/Sao_Paulo'
+    restart: unless-stopped
+    ports:
+      - ${POSTGRES_PORT}:${POSTGRES_PORT}
+    networks:
+      - network
+    volumes:
+      - postgres_db:/var/lib/postgres/data
+    healthcheck:
+      test: [ 'CMD-SHELL', 'pg_isready -d payment_db -U postgres' ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+networks:
+  network:
+    driver: bridge
+
+volumes:
+  postgres_db:
