@@ -4,6 +4,7 @@ import { PrismaModule } from '@app/common';
 import * as Joi from 'joi';
 import { PaymentController } from './payment.controller';
 import { PaymentService } from './payment.service';
+import { MercadoPagoService } from '../integrations/mercadopago.service';
 
 @Module({
   imports: [
@@ -35,6 +36,6 @@ import { PaymentService } from './payment.service';
   ],
   exports: [],
   controllers: [PaymentController],
-  providers: [PaymentService],
+  providers: [PaymentService, MercadoPagoService],
 })
 export class PaymentModule {}

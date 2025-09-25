@@ -2,6 +2,7 @@ import { Injectable, HttpStatus } from '@nestjs/common';
 import { Prisma, PaymentType } from '@prisma/client';
 import { customMessage, MESSAGE, PrismaService, ResponseDto } from '@app/common';
 import { CreatePaymentDto, UpdatePaymentDto } from './dto/payment.dto';
+import { MercadoPagoService } from '../integrations/mercadopago.service';
 
 export const paymentSelectPublic: Prisma.PaymentSelect = {
   id: true,
@@ -14,47 +15,50 @@ export const paymentSelectPublic: Prisma.PaymentSelect = {
 
 @Injectable()
 export class PaymentService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly mercadopagoService: MercadoPagoService,
+  ) {}
 
   async create(createPaymentDto: CreatePaymentDto): Promise<ResponseDto> {
     try {
-      const newPayment = await this.prisma.$transaction(async tx => {
-        const createdPayment = await tx.payment.create({
-          data: {
-            ...createPaymentDto,
+      const created = await this.prisma.payment.create({
+        data: {
+          ...createPaymentDto,
+        },
+      });
+
+      if (createPaymentDto.paymentMethod === PaymentType.CREDIT_CARD) {
+        const mercadoPagoResponse = await this.mercadopagoService.checkout({
+          items: {
+            cpf: createPaymentDto.cpf,
+            description: createPaymentDto.description,
+            quantity: 1,
+            unit_price: createPaymentDto.amount,
           },
         });
-        return createdPayment;
-      });
-      return customMessage(HttpStatus.CREATED, MESSAGE.PAYMENT_CREATE_SUCCESS, newPayment);
-    } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        if (error.code === 'P2002') {
-          return customMessage(HttpStatus.CONFLICT, MESSAGE.PAYMENT_ALREADY);
-        }
+        return customMessage(
+          HttpStatus.CREATED,
+          MESSAGE.PAYMENT_CREATE_SUCCESS,
+          mercadoPagoResponse.data,
+        );
       }
+      return customMessage(HttpStatus.CREATED, MESSAGE.PAYMENT_CREATE_SUCCESS, created);
+    } catch (error) {
       return customMessage(HttpStatus.BAD_REQUEST, MESSAGE.PAYMENT_CREATE_FAILED, error);
     }
   }
 
   async update(id: string, updatePaymentDto: UpdatePaymentDto): Promise<ResponseDto> {
     try {
-      const updated = await this.prisma.$transaction(async tx => {
-        const updatedPayment = await tx.payment.update({
-          where: { id },
-          data: {
-            ...updatePaymentDto,
-          },
-        });
-        return updatedPayment;
+      const updated = await this.prisma.payment.update({
+        where: { id },
+        data: {
+          ...updatePaymentDto,
+        },
       });
       return customMessage(HttpStatus.OK, MESSAGE.PAYMENT_UPDATE_SUCCESS, updated);
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        if (error.code === 'P2002') {
-          return customMessage(HttpStatus.CONFLICT, MESSAGE.PAYMENT_ALREADY);
-        }
-      }
       return customMessage(HttpStatus.BAD_REQUEST, MESSAGE.PAYMENT_UPDATE_FAILED, error);
     }
   }
