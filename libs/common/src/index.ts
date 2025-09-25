@@ -6,7 +6,6 @@ export * from './exceptions/http-exception.filter';
 export * from './interceptors/logger.interceptor';
 export * from './interfaces/response';
 export * from './messages/message';
-export * from './middlewares/logger.middleware';
 export * from './pipes/joi.validator.pipe';
 export * from './swagger/swagger-document-build';
 export * from './utils/cpf.validator';
