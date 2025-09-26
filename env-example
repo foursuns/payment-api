@@ -1,0 +1,47 @@
+# Application
+API_PREFIX=axe/api
+API_NAME=Payment Service
+
+# Application Module
+APP_PAYMENT=Payment API
+
+# Cors
+CORS_ENABLED=true
+CORS_CREDENTIALS=true
+CORS_ALLOWED_ORIGINS=*
+CORS_ALLOWED_HEADERS=Accept,Content-Type,Authorization,Set-Cookie,Access-Control-Allow-Origin,Cache-Control,Pragma,x-access-token,X-Requested-With,x-company-id,x-tenant-id,XSRF-TOKEN
+CORS_ALLOWED_METHODS=GET,HEAD,PUT,POST,DELETE,PATCH,OPTIONS
+CORS_MAX_AGE=3600
+
+# Environment
+NODE_ENV=production
+
+# Environment
+HOST=localhost
+PORT=5000
+
+# PostgreSQL
+POSTGRES_HOST=localhost
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=123456
+POSTGRES_DB=payment_db
+POSTGRES_PORT=5432
+
+# Prisma
+DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?schema=public
+
+# Swagger
+SWAGGER_ENABLED=true
+SWAGGER_PREFIX=swagger
+SWAGGER_TITLE=Payment Service
+SWAGGER_VERSION=1.0
+SWAGGER_DESCRIPTION=Payment API
+SWAGGER_ENDPOINT=payment/api/v1/swagger
+
+# Mercado Pago
+MERCADOPAGO_API_URL=https://api.mercadopago.com
+MERCADOPAGO_ACCESS_TOKEN=TEST-7420906218975827-092508-6f6447ab7029d74fe2aded44b4101f31-2708010795
+MERCADOPAGO_WEBHOOK=https://overgesticulative-obscuredly-lucille.ngrok-free.dev/axe/api/v1/payments/webhooks/mercadopago
+
+# Ngrok
+NGROK_AUTHTOKEN=33DIgprDUyzQBAgeyRNVqExi79U_4qY3BbFeBBvh8deR6x396
