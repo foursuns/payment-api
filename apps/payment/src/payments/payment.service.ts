@@ -37,11 +37,10 @@ export class PaymentService {
             unit_price: createPaymentDto.amount,
           },
         });
-        return customMessage(
-          HttpStatus.CREATED,
-          MESSAGE.PAYMENT_CREATE_SUCCESS,
-          mercadoPagoResponse.data,
-        );
+        return customMessage(HttpStatus.CREATED, MESSAGE.PAYMENT_CREATE_SUCCESS, {
+          ...created,
+          ...mercadoPagoResponse.data,
+        });
       }
       return customMessage(HttpStatus.CREATED, MESSAGE.PAYMENT_CREATE_SUCCESS, created);
     } catch (error) {
@@ -60,6 +59,21 @@ export class PaymentService {
       return customMessage(HttpStatus.OK, MESSAGE.PAYMENT_UPDATE_SUCCESS, updated);
     } catch (error) {
       return customMessage(HttpStatus.BAD_REQUEST, MESSAGE.PAYMENT_UPDATE_FAILED, error);
+    }
+  }
+
+  async webhook(webhookDto: any): Promise<ResponseDto> {
+    const { id, status } = webhookDto;
+    try {
+      const updatedStatus = await this.prisma.payment.update({
+        where: { id },
+        data: {
+          status: status,
+        },
+      });
+      return customMessage(HttpStatus.OK, MESSAGE.PAYMENT_UPDATE_STATUS_SUCCESS, updatedStatus);
+    } catch (error) {
+      return customMessage(HttpStatus.BAD_REQUEST, MESSAGE.PAYMENT_UPDATE_STATUS_FAILED, error);
     }
   }
 

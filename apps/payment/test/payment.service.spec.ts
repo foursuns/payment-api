@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus } from '@nestjs/common';
 import { PaymentType, StatusType } from '@prisma/client';
-import { CreatePaymentDto } from '../payments/dto/payment.dto';
-import { PaymentService } from '../payments/payment.service';
-import { MercadoPagoService } from '../integrations/mercadopago.service';
+import { CreatePaymentDto } from '../src/payments/dto/payment.dto';
+import { PaymentService } from '../src/payments/payment.service';
+import { MercadoPagoService } from '../src/integrations/mercadopago.service';
 import { MESSAGE, PrismaService } from '@app/common';
 
 const mockPrismaService = {
@@ -102,7 +102,7 @@ describe('PaymentService', () => {
       });
       expect(result.statusCode).toBe(HttpStatus.CREATED);
       expect(result.message).toBe(MESSAGE.PAYMENT_CREATE_SUCCESS);
-      expect(result.data).toEqual(mockMercadoPagoResponse.data);
+      expect(result.data).toEqual({ ...mockCreatedPayment, ...mockMercadoPagoResponse.data });
     });
 
     it('should return a bad request message on generic error', async () => {
@@ -154,6 +154,44 @@ describe('PaymentService', () => {
 
       expect(result.statusCode).toBe(HttpStatus.BAD_REQUEST);
       expect(result.message).toBe(MESSAGE.PAYMENT_UPDATE_FAILED);
+    });
+  });
+
+  describe('checkout', () => {
+    const paymentId = 'some-uuid';
+    const statusToUpdate = StatusType.PAID;
+
+    const mockUpdatedPayment = {
+      id: paymentId,
+      cpf: '12345678901',
+      description: 'Test payment',
+      amount: 100,
+      paymentMethod: PaymentType.PIX,
+      status: statusToUpdate,
+    };
+
+    it('should update the payment status successfully', async () => {
+      mockPrismaService.payment.update.mockResolvedValue(mockUpdatedPayment);
+
+      const result = await service.webhook({ id: paymentId, status: statusToUpdate });
+
+      expect(mockPrismaService.payment.update).toHaveBeenCalledWith({
+        where: { id: paymentId },
+        data: { status: statusToUpdate },
+      });
+      expect(result.statusCode).toBe(HttpStatus.OK);
+      expect(result.message).toBe(MESSAGE.PAYMENT_UPDATE_STATUS_SUCCESS);
+      expect(result.data).toEqual(mockUpdatedPayment);
+    });
+
+    it('should return a bad request message on generic error', async () => {
+      const genericError = new Error('Generic error');
+      mockPrismaService.payment.update.mockRejectedValue(genericError);
+
+      const result = await service.webhook({ id: paymentId, status: statusToUpdate });
+
+      expect(result.statusCode).toBe(HttpStatus.BAD_REQUEST);
+      expect(result.message).toBe(MESSAGE.PAYMENT_UPDATE_STATUS_FAILED);
     });
   });
 

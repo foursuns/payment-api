@@ -39,6 +39,13 @@ export class PaymentController {
     return await this.paymentService.create(paymentDto);
   }
 
+  @Post('webhooks/mercadopago')
+  @HttpCode(HttpStatus.OK)
+  async webhook(@Body() webhookDto: any) {
+    await this.paymentService.webhook(webhookDto);
+    return { received: true };
+  }
+
   @Put(':id')
   @ApiBody({ type: UpdatePaymentDto, description: 'Payment Information' })
   @ApiBadRequestResponse({ description: 'Bad Request' })

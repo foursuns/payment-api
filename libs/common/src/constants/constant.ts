@@ -11,6 +11,8 @@ export enum MESSAGE {
   PAYMENT_FOUND = 'Pagamento encontrado',
   PAYMENT_NOT_FOUND = 'Pagamento não encontrado',
   PAYMENT_LIST_EMPTY = 'Nenhum pagamento cadastrado',
+  PAYMENT_UPDATE_STATUS_SUCCESS = 'Status de pagamento atualizado com sucesso',
+  PAYMENT_UPDATE_STATUS_FAILED = 'Falha ao tentar atualizar status de pagamento',
 
   MERCADOPAGO_AUTH_SUCCESS = 'Autenticação com a API do Mercado Pago realizada com sucesso',
   MERCADOPAGO_AUTH_FAILED = 'Falha na autenticação com a API do Mercado Pago',

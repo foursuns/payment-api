@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus } from '@nestjs/common';
-import { PaymentController } from './payment.controller';
-import { PaymentService } from '../payments/payment.service';
-import { CreatePaymentDto, UpdatePaymentDto } from './dto/payment.dto';
-import { QueryDto } from './dto/query.dto';
+import { PaymentController } from '../src/payments/payment.controller';
+import { PaymentService } from '../src/payments/payment.service';
+import { CreatePaymentDto, UpdatePaymentDto } from '../src/payments/dto/payment.dto';
+import { QueryDto } from '../src/payments/dto/query.dto';
 import { PaymentType } from '@prisma/client';
 
 const mockPaymentService = {
