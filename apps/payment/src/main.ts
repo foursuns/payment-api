@@ -4,6 +4,7 @@ import { Logger, NestApplicationOptions, ValidationPipe, VersioningType } from '
 import { HttpExceptionFilter, LoggingInterceptor, SwaggerDocumentBuilder } from '@app/common';
 import { PaymentModule } from './payments/payment.module';
 import helmet from 'helmet';
+import * as ngrok from '@ngrok/ngrok';
 
 declare const module: any;
 
@@ -58,7 +59,7 @@ async function bootstrap() {
     const swaggerBuild = new SwaggerDocumentBuilder(app);
     swaggerBuild.setupSwagger();
     Logger.log(
-      `📗 Swagger is running: ${configService.get('HOST')}:${configService.get('PORT')}/${configService.get('SWAGGER_ENDPOINT')}`,
+      `📗 Swagger is running: http://${configService.get('HOST')}:${configService.get('PORT')}/${configService.get('SWAGGER_ENDPOINT')}`,
     );
   } else {
     Logger.log(`❌ Swagger is disabled`);
@@ -67,6 +68,10 @@ async function bootstrap() {
   await app.listen(configService.get('PORT') ?? 5000, async (): Promise<void> => {
     Logger.log(`🚀 Application running on port ${configService.get('PORT') ?? 5000}`);
   });
+
+  ngrok
+    .connect({ addr: configService.get('PORT') ?? 5000, authtoken_from_env: true })
+    .then(listener => Logger.log(`💻 NGROK Ingress established: ${listener.url()}`));
 
   if (module.hot) {
     module.hot.accept();
